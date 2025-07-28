@@ -2,7 +2,7 @@
 layout: post
 title: "Writing memory efficient C structs"
 date: 2025-07-29
-tags: [blog, tutorial, C, memory efficiency, DoD]
+tags: [blog, tutorial, C]
 ---
 
 # Writing memory efficient structs in C
