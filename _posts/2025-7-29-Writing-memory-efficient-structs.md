@@ -1,3 +1,10 @@
+---
+layout: post
+title: "Writing memory efficient C structs"
+date: 2025-07-29
+tags: [blog, tutorial, C, memory efficiency, DoD]
+---
+
 # Writing memory efficient structs in C
 A struct in C is the best way to organize your data so that you can easily use the data later in your program. However, there are a few caveats to C structures, mainly how their memory works.
 
