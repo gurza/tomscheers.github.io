@@ -25,7 +25,7 @@ struct Monster {
 ```
 
 Here I've defined a basic Monster struct. It has a lot of basic fields which hold some data about this monster.
-Before trying to decrease the size of this struct we should probably look at how large this struct is at the moment. So let's count them!
+Before trying to reduce the size of this struct we should probably look at how large this struct is at the moment. So let's count all of the bytes!
 ```c
 struct Monster {
 	bool is_alive; // Boolean is 1 byte
@@ -70,7 +70,7 @@ But why is this padding even added? Well, dear reader, this padding is added bec
 
 ## Padding reduction
 
-Can we reduce padding? Yes! As you can see at byte offset 84 to 85, there actually isn't any padding added between them. This is because can_fly and can_swim are of the same type. Meaning that when the compiler sees two fields of the same size it combines them. We can use this to our advantage by grouping all of the fields together with the same size. It's best to order your struct from largest field to smallest, this minimizes size because larger types are usually a multiple of 4 and all of the smaller types like booleans and chars can be combined at the end leaving little padding.
+Can we reduce padding? Yes! As you can see at byte offset 84 to 85, there actually isn't any padding added between them. This is because can_fly and can_swim are of the same size (both 1 byte). Meaning that when the compiler sees two fields of the same size it combines them. We can use this to our advantage by grouping all of the fields together with the same size. It's best to order your struct from largest field to smallest, this minimizes size because larger types are usually a multiple of 4 and all of the smaller types like booleans and chars can be combined at the end leaving little padding.
 So let's apply these strategies to our struct:
 ```c
 struct Monster {
@@ -108,7 +108,7 @@ Great! We've brought the size of our struct down by 4 bytes already. Let's look 
 | 88     | 1    | has_armor   |
 | 89-91  | 3    | **Padding** |
 
-As you can see, by only **reordering** our struct we've already made a decrease in the amount of memory our struct uses. Say we have a thousand monsters, we’ve reduced the memory usage of the monsters from 96KB to 92KB, but we can go further!
+As you can see, by only **reordering** our struct we've already made a reduction in the amount of memory our struct uses. Say we have a thousand monsters, we’ve reduced the memory usage of the monsters from 96KB to 92KB, but we can go further!
 
 
 ## Derived state
@@ -133,10 +133,10 @@ So now running sizeof struct Monster again we get:
 ```c
 sizeof(struct Monster); // => 88
 ```
-We brought the size of the struct down 4 bytes by just removing a singular boolean? Remember since structs are aligned to 4 bytes, any padding is therefore unnecessary if the size of the struct is a multiple of 4. 
+We brought the size of the struct down 4 bytes by just removing a singular boolean? Remember: since structs are aligned to 4 bytes, any padding is therefore unnecessary if the size of the struct is a multiple of 4 without the padding. 
 
 ## Types
-Another way to cut down on the overall size of our struct is by using the smallest appropriate size available. Take for example the health field. The health of a monster is currently represented by a 4 byte signed integer, meaning that the health can range from -2^31 to 2^31-1 (2^31 ~= 2 million). We can already see that half of the integers potential is unused because the health of a monster should never be negative, so an unsigned int would fit way better. However, this still leaves us with over 4 million possible integer values, which is simply way too much to represent the health of a monster. This is where the stdint.h header comes in handy. This header defines a lot of useful int types which lets us use integers with a specific number of bits. The smallest of these being uint8_t (unsigned 8 bit int). An 8 bit int has a range from 0 to 255, which I reckon would be enough for most programs, but just to be sure we will use a uint16_t, which has a much larger range of over 65 thousand. The same can be done for damage_hit and the speed field can easily be represented in a uint8_t. The x_position and y_position can unfortunately not get a smaller type nor can a float be unsigned. This leaves us with the following struct:
+Another way to cut down on the overall size of our struct is by using the smallest appropriate size available. Take for example the health field. The health of a monster is currently represented by a 4 byte signed integer, meaning that the health can range from -2^31 to 2^31-1 (2^31 ~= 2 million). We can already see that half of the integers potential is unused because the health of a monster should never be negative, so an unsigned int would fit way better. However, this still leaves us with over 4 million possible integer values, which is simply way too much to represent the health of a monster. This is where the stdint.h header comes in handy. This header defines a lot of useful int types which lets us use integers with a specific number of bits. The smallest of these being uint8_t (unsigned 8 bit int). An unsigned 8 bit int has a range from 0 to 255, which I reckon would be enough in most cases, but just to be sure we will use a uint16_t, which has a much larger range of over 65 thousand. The same can be done for damage_hit and the speed field can easily be represented in a uint8_t. The x_position and y_position can unfortunately not get a smaller type nor can a float be unsigned. This leaves us with the following struct:
 ```c
 struct Monster {
 	char name[64];
@@ -175,7 +175,7 @@ sizeof(struct Monster); // => 80
 ```
 
 ## String ID enum
-Our last method on how to reduce the size of your struct and this can be the most impactful one. If you store any name used for identification as a string, let's say the model version of a phone or the name of a specific monster you've implemented in your game, you're doing it wrong. Using this implementation you'd be allocating a totally new string for each Monster you're creating, this is a total waste of memory. Instead it would be best to use enum in this case, which has a size of 4 bytes. Just define an enum with all of the monster names or phone models you want to have:
+Our last method on how to reduce the size of your struct and this can be the most impactful one. If you store any name used for identification as a string directly on the struct, let's say the model version of a phone or the name of a specific monster you've implemented in your game, you're doing it wrong. Using this implementation you'd be allocating a totally new string for each Monster you're creating, this is a total waste of memory. Instead it would be best to use enum in this case, which has a size of 4 bytes. Just define an enum with all of the monster names or phone models you want to have:
 ```c
 enum MonsterName {
 	GIANT,
@@ -195,10 +195,10 @@ struct Monster {
 	uint16_t health;
 	uint16_t damage_hit;
 	uint8_t speed;
-	bool can_fly : 1;
-	bool can_swim : 1;
-	bool is_poisoned : 1;
-	bool has_armor : 1;
+	unsigned can_fly : 1;
+	unsigned can_swim : 1;
+	unsigned is_poisoned : 1;
+	unsigned has_armor : 1;
 };
 
 sizeof(struct Monster); // => 20
@@ -207,7 +207,8 @@ sizeof(struct Monster); // => 20
 There are still some potential improvements to be made, like you can derive a lot of state from just the name of the Monster, but I'm leaving that up as a challenge for the reader.
 
 ## Trade-offs
-Does this mean that you should immediately hyper optimize every struct you write from now on? As most things it depends on the context. Writing structs which are memory efficient is especially important in performance sensitive systems or programs with limited memory. Some methods like choosing smaller sizes for your int can easily cause an integer overflow or an integer wrap if you're not careful. Also derived state can often require a lot more boiler plate, especially when the state requires many other fields on the struct to be calculated.
+Does this mean that you should immediately hyper optimize every struct you write from now on? As most things it depends on the context. Writing structs which are memory efficient is especially important in performance sensitive systems or programs with limited memory. However say you just have one or two structs in your program it could be worth the extra bytes for readability purposes. 
+Also, some of these methods can lead to unexpected behavior if not handled properly, like integer overflows if you use an integer type which is too small.
 
 ## Note
 I wrote this blog as a teen, typing it up on my old school computer because I recently stumbled upon data oriented development and thought it was interesting and wanted to write a blog about it. I'm by far an expert and I could be wrong in some specifications. If you find any errors feel free to open an issue on GitHub!
