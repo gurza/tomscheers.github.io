@@ -1,4 +1,4 @@
-remote_theme: pages-themes/architect@v0.2.0
+remote_theme: pages-themes/hackert@v0.2.0
 plugins:
 - jekyll-remote-theme # add this line to the plugins list if you already have one
 
@@ -7,15 +7,3 @@ timezone: Europe/Amsterdam
 title: "Tom's Blog"
 description: "A blog site covering topics like low level programming, privacy, computers and more"
 url: "https://tomscheers.github.io"
-
-# Author
-author:
-  name: "Tom Scheers"
-  email: "tomscheers@outlook.com"
-
-# Minima options
-minima:
-  skin: dark     
-  social_links:
-    - platform: github
-      user_url: "https://github.com/tomScheers"
