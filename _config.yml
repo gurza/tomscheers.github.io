@@ -7,3 +7,7 @@ timezone: Europe/Amsterdam
 title: "Tom's Blog"
 description: "A blog site covering topics like low level programming, privacy, computers and more"
 url: "https://tomscheers.github.io"
+
+author:
+  name: "Tom Scheers"
+  email: "tomscheers@outlook.com"
