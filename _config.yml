@@ -1,4 +1,25 @@
-remote_theme: pages-themes/hacker@v0.2.0
+theme: minima
+
+# Site basics
+timezone: Europe/Amsterdam
+title: "Tom's Blog"
+description: "A blog site covering topics like low level programming, privacy, computers and more"
+url: "https://tomscheers.github.io"
+
+# Author
+author:
+  name: "Tom Scheers"
+  email: "tomscheers@outlook.com"
+  image: "https://avatars.githubusercontent.com/u/150141216?s=400&v=4"
+
+# Minima options
+minima:
+  skin: dark     
+  social_links:
+    - platform: github
+      user_url: "https://github.com/tomScheers"
+
+# Recommended plugins (work on GitHub Pages)
 plugins:
-- jekyll-remote-theme # add this line to the plugins list if you already have one
-future: true
+  - jekyll-feed
+  - jekyll-seo-tag
