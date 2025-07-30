@@ -6,6 +6,7 @@ tags: [blog, tutorial, C]
 ---
 
 A struct in C is the best way to organize your data so that you can easily use the data later in your program. However, there are a few caveats to C structures, mainly how their memory works.
+Note that I'm making a lot of assumptions about type sizes and standards. These can differ between systems and ABI's, so for example, the alignment value of an int isn't strictly 4, meaning some sizes differ from mine.
 
 ## Our struct 
 ```c
@@ -41,12 +42,12 @@ struct Monster {
 	bool has_armor; // 1 byte
 };
 ```
-So let's see, we have 5 Booleans, 3 integers, 2 floats and one 64 byte string... That should be 90 bytes! Let's test this theory:
+So let's see, we have 5 Booleans, 3 integers, 2 floats and one 64 byte string... That should be 89 bytes! Let's test this theory:
 ```c
 sizeof(struct Monster); // => 96
 ```
 
-The actual size of the struct is 96 bytes, not the 90 bytes we initially predicted. Let's look at our struct in memory:
+The actual size of the struct is 96 bytes, not the 89 bytes we initially predicted. Let's look at our struct in memory:
 
 | Offset | Size (bytes) | Member      |
 | ------ | ------------ | ----------- |
@@ -66,12 +67,11 @@ The actual size of the struct is 96 bytes, not the 90 bytes we initially predict
 | 94-95  | 2            | **Padding** |
 
 So now that number makes a bit more sense. As you can see from the memory layout table above there is a total of 6 bytes of padding added to the struct, which is exactly the memory we were missing.
-But why is this padding even added? Well, dear reader, this padding is added because the CPU needs memory to be aligned in sets of 4 bytes because it's optimized in that fashion. So the compiler adds padding in between the members to keep the performance of the program at a reasonable level.
+But why is this padding even added? The reason for this padding is because each type has its own alignment requirements, meaning that the compiler must place the it at a memory address such that it's a multiple of its alignment value, so in this case each ```int``` field requires to be at an alignment of 4 (depends on system and ABI), other types have different alignment requirements, like for booleans and chars it's 1 on most systems and for double it's 8 (again, usually). This padding is added because misalligned access can be slower or even illegal on some hardware. Add offset 94 and 95 we also have some padding, this padding is called tail padding because it isn't there to allign any other field after it. Tail padding ensures the total struct size is a multiple of the struct’s alignment, which is the maximum alignment requirement of any member. This guarantees that if you create an array of structs, each element remains properly aligned.. So in this case one of the fields with the largest alignment value is the ```health``` field, which has an alignment value of 4. Now we take the size of the struct (excluding the tail padding), which is 94 and round it up to the nearest multiple of 4, so 96.
 
 ## Padding reduction
 
-Can we reduce padding? Yes! As you can see at byte offset 84 to 85, there actually isn't any padding added between them. This is because can_fly and can_swim are of the same size (both 1 byte). Meaning that when the compiler sees two fields of the same size it combines them. We can use this to our advantage by grouping all of the fields together with the same size. It's best to order your struct from largest field to smallest, this minimizes size because larger types are usually a multiple of 4 and all of the smaller types like booleans and chars can be combined at the end leaving little padding.
-So let's apply these strategies to our struct:
+Can we reduce padding? Yes! As you can see at byte offset 84 to 85, there actually isn't any padding added between them. This is because can_fly and can_swim have the same alignment value (1 byte). Meaning that when the compiler sees two fields of the same size it combines them. We can use this to our advantage by grouping all of the fields together with the same alignment value. It's best to order your struct from largest field to smallest, this minimizes size because types with a larger alignment value will have to add padding way less because the fields before it take up all the memory:
 ```c
 struct Monster {
 	char name[64];
@@ -133,7 +133,7 @@ So now running sizeof struct Monster again we get:
 ```c
 sizeof(struct Monster); // => 88
 ```
-We brought the size of the struct down 4 bytes by just removing a singular boolean? Remember: since structs are aligned to 4 bytes, any padding is therefore unnecessary if the size of the struct is a multiple of 4 without the padding. 
+We brought the size of the struct down 4 bytes by just removing a singular boolean? Remember: The tail padding is just the size of the struct rounded up to a multiple of the maximum alignment value. So in this case we go from 89 bytes, which is rounded up to 92 bytes, to 88 bytes, which already is a multiple of the maximum alignment value.
 
 ## Types
 Another way to cut down on the overall size of our struct is by using the smallest appropriate size available. Take for example the health field. The health of a monster is currently represented by a 4 byte signed integer, meaning that the health can range from -2^31 to 2^31-1 (2^31 ~= 2 million). We can already see that half of the integers potential is unused because the health of a monster should never be negative, so an unsigned int would fit way better. However, this still leaves us with over 4 million possible integer values, which is simply way too much to represent the health of a monster. This is where the stdint.h header comes in handy. This header defines a lot of useful int types which lets us use integers with a specific number of bits. The smallest of these being uint8_t (unsigned 8 bit int). An unsigned 8 bit int has a range from 0 to 255, which I reckon would be enough in most cases, but just to be sure we will use a uint16_t, which has a much larger range of over 65 thousand. The same can be done for damage_hit and the speed field can easily be represented in a uint8_t. The x_position and y_position can unfortunately not get a smaller type nor can a float be unsigned. This leaves us with the following struct:
@@ -174,8 +174,8 @@ struct Monster {
 sizeof(struct Monster); // => 80
 ```
 
-## String ID enum
-Our last method on how to reduce the size of your struct and this can be the most impactful one. If you store any name used for identification as a string directly on the struct, let's say the model version of a phone or the name of a specific monster you've implemented in your game, you're doing it wrong. Using this implementation you'd be allocating a totally new string for each Monster you're creating, this is a total waste of memory. Instead it would be best to use enum in this case, which has a size of 4 bytes. Just define an enum with all of the monster names or phone models you want to have:
+## Use enums for ID
+Our last method on how to reduce the size of your struct and this can be the most impactful one. If you store any name used for identification as a string directly on the struct, let's say the model version of a phone or the name of a specific monster you've implemented in your game, you're doing it wrong. Using this implementation you'd be allocating a totally new string for each Monster you're creating, this is a total waste of memory. Instead it would be best to use enum in this case, which usually has a size of 4 bytes (not guaranteed). Just define an enum with all of the monster names or phone models you want to have:
 ```c
 enum MonsterName {
 	GIANT,
