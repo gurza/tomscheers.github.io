@@ -5,7 +5,7 @@ plugins:
 # Site basics
 timezone: Europe/Amsterdam
 title: "Tom's Blog"
-description: "A blog site covering topics like low level programming, privacy, computers and more"
+description: "A blog site covering topics like low level programming, privacy, computers and more\nNote that everything I write here is for my own educational purposes. Since I self-study programming in my free-time (as a hobby too), I want to write some stuff as extra practise."
 url: "https://tomscheers.github.io"
 
 author: "Tom Scheers"
