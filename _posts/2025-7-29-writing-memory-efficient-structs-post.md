@@ -8,7 +8,7 @@ tags: [blog, tutorial, C]
 A struct in C is the best way to organize your data so that you can easily use the data later in your program. However, there are a few caveats to C structures, mainly how their memory works.
 Note that I'm making a lot of assumptions about type sizes and standards. These can differ between systems and ABI's, so for example, the alignment value of an int isn't strictly 4, meaning some sizes differ from mine.
 
-## Our struct 
+## Our struct
 ```c
 struct Monster {
 	bool is_alive; // Used to see whether or not the monster is alive
@@ -110,9 +110,8 @@ Great! We've brought the size of our struct down by 4 bytes already. Let's look 
 
 As you can see, by only **reordering** our struct we've already made a reduction in the amount of memory our struct uses. Say we have a thousand monsters, we’ve reduced the memory usage of the monsters from 96KB to 92KB, but we can go further!
 
-
 ## Derived state
-Say you have a Person struct and that struct holds a field about the person's age, and you want to find out if the person is a legal adult. In this cases, you can derive this state dynamically instead of storing it directly, which can reduce struct size. This principle can be used to cut down on the amount of boolean fields needed on a struct, but it requires some logical thinking. 
+Say you have a Person struct and that struct holds a field about the person's age, and you want to find out if the person is a legal adult. In this cases, you can derive this state dynamically instead of storing it directly, which can reduce struct size. This principle can be used to cut down on the amount of boolean fields needed on a struct, but it requires some logical thinking.
 In our case we can deprecate the is_alive field, since we already have the health field, so as long as health > 0 the monster is alive.
 ```c
 struct Monster {
@@ -141,7 +140,7 @@ Another way to cut down on the overall size of our struct is by using the smalle
 struct Monster {
 	char name[64];
 	float x_position;
-	float y_position;	
+	float y_position;
 	uint16_t health;
 	uint16_t damage_hit;
 	uint8_t speed;
@@ -160,7 +159,7 @@ Some values can easily be represented in just 1 bit, take the booleans for examp
 struct Monster {
 	char name[64];
 	float x_position;
-	float y_position;	
+	float y_position;
 	uint16_t health;
 	uint16_t damage_hit;
 	uint8_t speed;
@@ -191,7 +190,7 @@ Then just use the enum instead of a whole new string:
 struct Monster {
 	enum MonsterName name;
 	float x_position;
-	float y_position;	
+	float y_position;
 	uint16_t health;
 	uint16_t damage_hit;
 	uint8_t speed;
@@ -207,7 +206,7 @@ sizeof(struct Monster); // => 20
 There are still some potential improvements to be made, like you can derive a lot of state from just the name of the Monster, but I'm leaving that up as a challenge for the reader.
 
 ## Trade-offs
-Does this mean that you should immediately hyper optimize every struct you write from now on? As most things it depends on the context. Writing structs which are memory efficient is especially important in performance sensitive systems or programs with limited memory. However say you just have one or two structs in your program it could be worth the extra bytes for readability purposes. 
+Does this mean that you should immediately hyper optimize every struct you write from now on? As most things it depends on the context. Writing structs which are memory efficient is especially important in performance sensitive systems or programs with limited memory. However say you just have one or two structs in your program it could be worth the extra bytes for readability purposes.
 Also, some of these methods can lead to unexpected behavior if not handled properly, like integer overflows if you use an integer type which is too small.
 
 ## Note
