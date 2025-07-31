@@ -210,4 +210,4 @@ Does this mean that you should immediately hyper optimize every struct you write
 Also, some of these methods can lead to unexpected behavior if not handled properly, like integer overflows if you use an integer type which is too small.
 
 ## Note
-I wrote this blog as a teen, typing it up on my old school computer because I recently stumbled upon data oriented development and thought it was interesting and wanted to write a blog about it. I'm by far an expert and I could be wrong in some specifications. If you find any errors feel free to open an issue on GitHub!
+I wrote this blog as a teen, typing it up on my old school computer because I recently stumbled upon data oriented development and thought it was interesting and wanted to write a blog about it. I'm by far not an expert and I could be wrong in some specifications. If you find any errors feel free to open an issue on GitHub!
