@@ -24,7 +24,7 @@ sizeof(char) <= sizeof(short) <= sizeof(int) <= sizeof(long) <= sizeof(long long
 ```
 Where a `char` must be equal or greater than 1 byte, a `short` and `int` must not be less than 2 bytes, a `long` must not be less than 4 bytes and a `long long` must contain at least 8 bytes This means that, theoretically, all of the listed types above can be as large as 8 bytes. In practise these sizes are usually the same across systems but it's handy to know that just saying an int is 4 bytes is not always true. For example many 16-bit systems use integers with a 2 byte size.
 
-### `long`
+### long Ambiguity
 Most of the types mentioned above are generally the same, except for `long`. The difference depends mainly on the architecture of the operating system. If you run a 32-bit machine a long will generally be 4 bytes, whilst on a 64-bit machine a long is generally 8 bytes. The difference is subtle, but it's important to know about if you want to store large integers in your program for example and want it to be portable across systems. The same goes for `size_t`, since it's defined as an `unsigned long`, it differs from architecture to architecture what the size is. However for a `size_t` this makes more sense, since its primary purpose is storing data related to memory size, it doesn't make sense for it to be larger than the size of a pointer on the system.
 As an example: on a 32-bit system a pointer is stored in 4 bytes of memory, so you can *only* have 4,294,967,296 unique pointers in your program. Consequently that's also the max size of a `size_t`, so if you're keeping track of the amount of values in an array on a 32-bit system, the size of that array will never exceed 4,294,967,296. 
 
