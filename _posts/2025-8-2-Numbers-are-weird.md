@@ -42,13 +42,13 @@ To find out we have to look into memory. Let's go with a -32 signed integer as a
 What? That's so much different than how 32 is stored in memory? Let's look at this with a step per step example.
 - The most significant bit (MSB) is the sign, so if this is 1 it's negative and if it's 0 it's positive, so in this case we're dealing with a negative number.
 But this doesn't actually explain the rest of the integer. What does explain it is Two's Complement (method used for storing signed integers). This is the method for calculating any given negative number:
-- 1. starting with the absolute binary representation of the number, with the leading bit being a sign bit;
-- 2. inverting (or flipping) all bits – changing every 0 to 1, and every 1 to 0;
-- 3. adding 1 to the entire inverted number, ignoring any overflow. Accounting for overflow will produce the wrong value for the result.
+1. starting with the absolute binary representation of the number, with the leading bit being a sign bit;
+2. inverting (or flipping) all bits – changing every 0 to 1, and every 1 to 0;
+3. adding 1 to the entire inverted number, ignoring any overflow. Accounting for overflow will produce the wrong value for the result.
 So using this on our -32 bit example we get:
-- 1. We take the absolute value of -32, which is 32 and turn it into binary accounting for the signed bit; `0100000`
-- 2. Then we invert all bits; `1011111`
-- 3. Then, we add one to this: `1100000`
+1. We take the absolute value of -32, which is 32 and turn it into binary accounting for the signed bit; `0100000`
+2. Then we invert all bits; `1011111`
+3. Then, we add one to this: `1100000`
 So -32 in binary is just `1100000`, and since our integer is 32-bit we just add all the zeros (in this case flipped, so all the ones), in between the MSB and the second MSB to get the result we got above.
 
 ### Comparison
@@ -110,6 +110,7 @@ Lucky for us there are even more integral types than just int and it's unsigned 
 - `uint32_t`
 - `int64_t`
 - `uint64_t`
+
 The good things about these types is that their size is always the same across all systems. The type naming is also very intuitive, if it has a 'u' in front of it it's an unsigned integer, otherwise it's signed, and the number in the type name represents the amount of bits the number holds. So let's say you wanted to have an unsigned 4 byte integer, you'd just use `uint32_t`, which is easier than `unsigned int` and it guarantees to actually hold 4 bytes of data. 
 ### Chars Are Types Too!
 One of the things which tripped me up as a beginner was storing number data in a `char`. The name would suggest that `char` is only used for storing character, but this isn't entirely the case. Although it is true that `char` is often used to store character data in `ASCII` format, it is essentially just another integral type capable of storing 1 byte. This small size also means that it's range isn't that large, just 0 to 255 if unsigned and -128 to 127 if signed.
@@ -122,6 +123,7 @@ In memory a 32-bit float looks as follows:
 - 1 sign bit
 - 8 exponent bits
 - 24 fraction bits (23 of which are explicitly stored)
+
 We're familiar with the sign bit, but what are the exponent bits and the fraction responsible for? Well this will become way more obvious once we look at the formula for calculating the value in decimal representation:
 let the sign bit be S, let the exponent bit be E and let the fraction be M. We can use the following formula to calculate the decimal number:
 `(-1)^S ⋅ 2 ^ (E - 127) ⋅ 1.M`
