@@ -71,7 +71,7 @@ But why is this padding even added? The reason for this padding is because each 
 
 ## Padding reduction
 
-Can we reduce padding? Yes! As you can see at byte offset 84 to 85, there actually isn't any padding added between them. This is because can_fly and can_swim have the same alignment value (1 byte). Meaning that when the compiler sees two fields of the same size it combines them. We can use this to our advantage by grouping all of the fields together with the same alignment value. It's best to order your struct from largest field to smallest, this minimizes size because types with a larger alignment value will have to add padding way less because the fields before it take up all the memory:
+Can we reduce padding? Yes! As you can see at byte offset 84 to 85, there actually isn't any padding added between them. This is because can_fly and can_swim have the same alignment value (1 byte). Meaning that when the compiler sees two fields of the same alignment value it combines them. We can use this to our advantage by grouping all of the fields together with the same alignment value. It's best to order your struct from largest field to smallest, this minimizes size because types with a larger alignment value will have to add padding way less because the fields before it take up all the memory:
 ```c
 struct Monster {
 	char name[64];
