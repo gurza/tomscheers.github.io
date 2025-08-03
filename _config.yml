@@ -1,9 +1,10 @@
-remote_theme: pages-themes/hacker@v0.2.0
+#remote_theme: pages-themes/hacker@v0.2.0
 plugins:
-- jekyll-remote-theme # add this line to the plugins list if you already have one
+#- jekyll-remote-theme
 - jekyll-feed # Add ATOM(RSS) feed
 
-# Site basics
+theme: minima
+# Site basic
 timezone: Europe/Amsterdam
 title: "Tom's Blog"
 description: "A blog site covering topics like low level programming, privacy, computers and more. Note that I'm not an expert, in anything, so take everything I write about with a grain of salt I guess :)."
