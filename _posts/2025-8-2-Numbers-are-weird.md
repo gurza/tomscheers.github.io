@@ -40,7 +40,8 @@ To find out we have to look into memory. Let's go with a -32 signed integer as a
 ```
 
 What? That's so much different than how 32 is stored in memory? Let's look at this with a step per step example.
-- The most significant bit (MSB) is the sign, so if this is 1 it's negative and if it's 0 it's positive, so in this case we're dealing with a negative number.
+
+The most significant bit (MSB) is the sign, so if this is 1 it's negative and if it's 0 it's positive, so in this case we're dealing with a negative number.
 
 But this doesn't actually explain the rest of the integer. What does explain it is Two's Complement (method used for storing signed integers). This is the method for calculating any given negative number:
 1. starting with the absolute binary representation of the number, with the leading bit being a sign bit;
