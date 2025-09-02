@@ -1,8 +1,9 @@
-remote_theme: pages-themes/midnight@v0.2.0
+#remote_theme: pages-themes/hacker@v0.2.0
 plugins:
-- jekyll-remote-theme
+#- jekyll-remote-theme
 - jekyll-feed # Add ATOM(RSS) feed
 
+theme: minima
 # Site basic
 timezone: Europe/Amsterdam
 title: "Tom's Blog"
